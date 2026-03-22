@@ -1,11 +1,30 @@
 version: '3.8'
 
 services:
-  fastapi-app:
+
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: app_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  fastapi:
     build: .
+    volumes:
+      - ./uploads:/app/uploads
     ports:
       - "8000:8000"
-    volumes:
-      - .:/app
     environment:
-      - PYTHONUNBUFFERED=1
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@db:5432/app_db
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
