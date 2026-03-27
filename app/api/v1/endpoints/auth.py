@@ -13,10 +13,10 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/register", response_model=UserResponse)
 async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
-    new_user = await register_user(db, user.name, user.email, user.password.get_secret_value())
-    return UserResponse(id=new_user.id, name=new_user.name, email=new_user.email)
+    new_user = await register_user(db, user.username, user.first_name, user.last_name, user.email, user.password.get_secret_value())
+    return UserResponse(first_name=new_user.first_name, username=new_user.username, last_name=new_user.last_name, email=new_user.email)
 
-@router.post("/login", response_model=UserResponse)
+@router.post("/login", response_model=Token)
 async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
     login = await login_user(db, user.username, user.password.get_secret_value())
 

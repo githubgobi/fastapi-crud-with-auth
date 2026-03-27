@@ -15,7 +15,6 @@ class UserLogin(UserBase):
     username: str 
     password: SecretStr = Field(min_length=8, max_length=128)
 class UserResponse(UserBase):
-    id: int
     username: str
     first_name: str | None
     last_name: str | None

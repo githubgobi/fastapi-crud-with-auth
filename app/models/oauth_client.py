@@ -4,17 +4,13 @@ from datetime import datetime
 import uuid
 from core.database import Base
 
-class User(Base):
-    __tablename__ = "users"
+class OAuthClient(Base):
+    __tablename__ = "oauth_clients"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    username = Column(String, nullable=False)
-    first_name = Column(String, nullable=True)
-    last_name = Column(String, nullable=True)
-    email = Column(String, unique=True, index=True)
-    password = Column(String, nullable=False)
+    client_id = Column(String, unique=True, index=True)
+    client_secret = Column(String, nullable=False)
+    user_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow)
-
-

@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timedelta
 import hashlib
 from http.client import HTTPException
@@ -17,7 +18,7 @@ def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    print("Verifying password:", plain_password, "against hash:", hashed_password)
+    logging.info("Verifying password: %s against hash: %s", plain_password, hashed_password)
     return pwd_context.verify(plain_password, hashed_password)
 
 def create_access_token(data: dict, expires_delta: timedelta = None):

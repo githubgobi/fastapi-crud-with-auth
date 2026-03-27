@@ -2,9 +2,16 @@ import uuid
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from repositories.user_repo import UserRepository
+from core.auth import hash_password
 
-async def register_user(db: AsyncSession, name: str, email: str, password: str):
-    user_data = {"name": name, "email": email, "password": password}
+async def register_user(db: AsyncSession, username: str, first_name: str, last_name: str, email: str, password: str):
+    user_data = {
+        "username": username,
+        "first_name": first_name,
+        "last_name": last_name,
+        "email": email,
+        "password": hash_password(password),  # Hash the password
+    }
     print("Registering user:", user_data)
     user = await UserRepository.create(db, user_data)
     return user

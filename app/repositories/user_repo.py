@@ -1,10 +1,12 @@
 from datetime import datetime, timedelta
-
+from sqlalchemy.dialects.postgresql import UUID
 from schemas.user import OauthToken
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from core.auth import generate_client_credentials, hash_token, verify_password ,hash_password
-from models.user import User, OAuthClient
+from models.user import User
+from models.oauth_client import OAuthClient
+from models.oauth_token import OAuthToken
 
 class UserRepository:
 
@@ -18,9 +20,12 @@ class UserRepository:
         client_id, client_secret = generate_client_credentials()
         client = OAuthClient(
             client_id=client_id,
-            client_secret_hash=hash_password(client_secret),
+            client_secret=client_secret,
             user_id=user.id
         )
+        db.add(client)
+        await db.commit()
+        await db.refresh(client)
         return user
     
     @staticmethod
@@ -30,7 +35,7 @@ class UserRepository:
         
     @staticmethod
     async def login(db: AsyncSession, username: str, password: str):
-        result = await db.execute(select(User).where(User.name == username))
+        result = await db.execute(select(User).where(User.username == username))
         user = result.scalars().first()
         if not user:
             raise ValueError("Invalid username")
@@ -41,11 +46,11 @@ class UserRepository:
         return user
         
     @staticmethod
-    async def create_client(db: AsyncSession, user_id: int):
+    async def create_client(db: AsyncSession, user_id: UUID):
         client_id, client_secret = generate_client_credentials()
         client = OAuthClient(
             client_id=client_id,
-            client_secret_hash=hash_password(client_secret),
+            client_secret=client_secret,
             user_id=user_id
         )
         db.add(client)
